@@ -3,7 +3,8 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { useAuth } from '../auth.jsx';
 import { useApi } from '../hooks.js';
 import { projectColor } from '../utils.js';
-import { CheckSquareIcon, DashboardIcon, FolderIcon, LogoMark, UsersIcon } from './icons.jsx';
+import { CalendarIcon, ChartIcon, CheckSquareIcon, DashboardIcon, FolderIcon, LogoMark, UsersIcon } from './icons.jsx';
+import GlobalSearch from './GlobalSearch.jsx';
 import NotificationBell from './NotificationBell.jsx';
 import ThemeSwitch from './ThemeSwitch.jsx';
 import UserMenu from './UserMenu.jsx';
@@ -12,6 +13,8 @@ const NAV = [
   { to: '/', end: true, label: 'Tableau de bord', short: 'Accueil', icon: DashboardIcon },
   { to: '/mes-taches', label: 'Mes tâches', short: 'Mes tâches', icon: CheckSquareIcon },
   { to: '/projets', label: 'Projets', short: 'Projets', icon: FolderIcon },
+  { to: '/calendrier', label: 'Calendrier', short: 'Calendrier', icon: CalendarIcon },
+  { to: '/rapports', label: 'Rapports', short: 'Rapports', icon: ChartIcon },
 ];
 const ADMIN_NAV = { to: '/admin/utilisateurs', label: 'Utilisateurs', short: 'Équipe', icon: UsersIcon };
 
@@ -19,6 +22,8 @@ const SECTION_TITLES = {
   '/': 'Tableau de bord',
   '/mes-taches': 'Mes tâches',
   '/projets': 'Projets',
+  '/calendrier': 'Calendrier',
+  '/rapports': 'Rapports',
   '/admin/utilisateurs': 'Utilisateurs',
 };
 
@@ -99,6 +104,9 @@ export default function Layout() {
         </header>
 
         <main id="contenu" className="main" tabIndex={-1}>
+          <div className="page-search-wrap">
+            <GlobalSearch />
+          </div>
           <Outlet />
         </main>
       </div>

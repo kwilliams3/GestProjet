@@ -15,23 +15,78 @@ export default function DashboardPage() {
 
   const { totals, projects, workload } = data;
   const firstName = user.full_name.split(' ')[0];
+  const completionRate = totals.total ? Math.round((totals.done / totals.total) * 100) : 0;
+  const activeProjects = projects.length;
+  const avgProjectProgress = activeProjects
+    ? Math.round(projects.reduce((sum, project) => sum + percent(project.done, project.total), 0) / activeProjects)
+    : 0;
+  const avgOpenTasks = workload.length
+    ? Math.round(workload.reduce((sum, member) => sum + member.open_tasks, 0) / workload.length)
+    : 0;
+  const atRiskProjects = projects.filter((project) => {
+    const progress = percent(project.done, project.total);
+    const late = project.end_date && project.end_date < todayISO() && progress < 100;
+    return late || progress < 40;
+  }).length;
 
   return (
     <>
-      <PageHeader eyebrow={todayLong()} title={`Bonjour ${firstName}`} subtitle="Voici l'avancement de vos projets actifs." />
+      <PageHeader eyebrow={todayLong()} title={`Bonjour ${firstName}`} subtitle="Voici une vue analytique de la performance de votre portefeuille." />
 
-      <div className="stats">
-        <StatTile icon={ListIcon} label="Tâches" value={totals.total} hint={`dans ${projects.length} projet${projects.length > 1 ? 's' : ''}`} />
-        <StatTile icon={CheckCircleIcon} tone="success" label="Terminées" value={totals.done} hint={`${percent(totals.done, totals.total)} % du total`} />
-        <StatTile icon={ClockIcon} tone="info" label="En cours" value={totals.in_progress} hint="en ce moment" />
+      <div className="stats analytics-kpis">
+        <StatTile
+          icon={ListIcon}
+          label="Tâches totales"
+          value={totals.total}
+          hint={`${activeProjects} projet${activeProjects > 1 ? 's' : ''} actif${activeProjects > 1 ? 's' : ''}`}
+        />
+        <StatTile
+          icon={CheckCircleIcon}
+          tone="success"
+          label="Taux de complétion"
+          value={`${completionRate}%`}
+          hint={`${totals.done}/${totals.total} tâches clôturées`}
+        />
+        <StatTile
+          icon={ClockIcon}
+          tone="info"
+          label="Charge moyenne"
+          value={avgOpenTasks}
+          hint={`${workload.length} membre${workload.length > 1 ? 's' : ''} actif${workload.length > 1 ? 's' : ''}`}
+        />
         <StatTile
           icon={AlertIcon}
-          tone={totals.overdue > 0 ? 'danger' : 'neutral'}
-          label="En retard"
-          value={totals.overdue}
-          hint={totals.overdue > 0 ? 'échéance dépassée' : 'aucun retard'}
+          tone={atRiskProjects > 0 ? 'danger' : 'neutral'}
+          label="Projets à risque"
+          value={atRiskProjects}
+          hint={atRiskProjects > 0 ? 'suivi prioritaire' : 'tous alignés'}
         />
       </div>
+
+      <section className="card panel analytics-panel">
+        <div className="panel-header">
+          <h2>Analyse de performance</h2>
+          <span className="pill">Moyenne {avgProjectProgress}%</span>
+        </div>
+
+        <div className="analytics-grid">
+          <div className="mini-stat">
+            <span className="mini-label">Progression globale</span>
+            <strong>{completionRate}%</strong>
+            <span className="mini-hint">de tâches terminées</span>
+          </div>
+          <div className="mini-stat">
+            <span className="mini-label">Projets actifs</span>
+            <strong>{activeProjects}</strong>
+            <span className="mini-hint">sur le portefeuille</span>
+          </div>
+          <div className="mini-stat">
+            <span className="mini-label">Retard</span>
+            <strong>{totals.overdue}</strong>
+            <span className="mini-hint">échéances dépassées</span>
+          </div>
+        </div>
+      </section>
 
       <div className="dashboard-grid">
         <section className="card panel">

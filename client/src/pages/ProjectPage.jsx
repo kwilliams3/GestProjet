@@ -26,6 +26,7 @@ import ProjectFormModal from '../components/ProjectFormModal.jsx';
 import TaskFilters from '../components/TaskFilters.jsx';
 import TaskList from '../components/TaskList.jsx';
 import TaskModal from '../components/TaskModal.jsx';
+import ProjectModules from '../components/ProjectModules.jsx';
 import { Avatars, ErrorMessage, Loading, PageHeader, ProgressBar } from '../components/ui.jsx';
 
 function Fact({ icon: FactIcon, label, children }) {
@@ -51,6 +52,7 @@ export default function ProjectPage() {
   const projectQuery = useApi(`/projects/${id}`);
   const tasksQuery = useApi(`/projects/${id}/tasks`);
   const [view, setView] = useState('kanban');
+  const [section, setSection] = useState('taches');
   const [filter, setFilter] = useState(EMPTY_FILTER);
   const [editingProject, setEditingProject] = useState(false);
   const [inviting, setInviting] = useState(false);
@@ -201,46 +203,61 @@ export default function ProjectPage() {
         )}
       </section>
 
-      <div className="toolbar">
-        <div className="segmented" role="group" aria-label="Affichage des tâches">
-          <button type="button" aria-pressed={view === 'kanban'} onClick={() => setView('kanban')}>
-            <DashboardIcon className="btn-icon-svg" />
-            Kanban
-          </button>
-          <button type="button" aria-pressed={view === 'liste'} onClick={() => setView('liste')}>
-            <ListIcon className="btn-icon-svg" />
-            Liste
-          </button>
+      <div className="toolbar project-section-toolbar">
+        <div className="segmented" role="group" aria-label="Rubriques du projet">
+          <button type="button" aria-pressed={section === 'taches'} onClick={() => setSection('taches')}>Tâches</button>
+          <button type="button" aria-pressed={section === 'budget'} onClick={() => setSection('budget')}>Budget</button>
+          <button type="button" aria-pressed={section === 'documents'} onClick={() => setSection('documents')}>Documents</button>
+          <button type="button" aria-pressed={section === 'temps'} onClick={() => setSection('temps')}>Temps</button>
         </div>
-        {project.can_manage && active && (
-          <button type="button" className="btn btn-primary" onClick={() => setCreatingTask(true)}>
-            <PlusIcon className="btn-icon-svg" />
-            Nouvelle tâche
-          </button>
-        )}
       </div>
 
-      {topLevel.length > 0 && (
-        <TaskFilters
-          filter={filter}
-          onChange={setFilter}
-          members={project.members.filter((m) => m.role !== 'invite')}
-          labels={labels}
-          shown={visibleTasks.length}
-          total={topLevel.length}
-        />
-      )}
+      {section === 'taches' ? (
+        <>
+          <div className="toolbar">
+            <div className="segmented" role="group" aria-label="Affichage des tâches">
+              <button type="button" aria-pressed={view === 'kanban'} onClick={() => setView('kanban')}>
+                <DashboardIcon className="btn-icon-svg" />
+                Kanban
+              </button>
+              <button type="button" aria-pressed={view === 'liste'} onClick={() => setView('liste')}>
+                <ListIcon className="btn-icon-svg" />
+                Liste
+              </button>
+            </div>
+            {project.can_manage && active && (
+              <button type="button" className="btn btn-primary" onClick={() => setCreatingTask(true)}>
+                <PlusIcon className="btn-icon-svg" />
+                Nouvelle tâche
+              </button>
+            )}
+          </div>
 
-      {view === 'kanban' ? (
-        <KanbanBoard
-          tasks={visibleTasks}
-          subtasksByParent={subtasksByParent}
-          canEdit={(task) => canEditTask(user, project, task)}
-          onOpen={(task) => openTaskById(task.id)}
-          onMove={moveTask}
-        />
+          {topLevel.length > 0 && (
+            <TaskFilters
+              filter={filter}
+              onChange={setFilter}
+              members={project.members.filter((m) => m.role !== 'invite')}
+              labels={labels}
+              shown={visibleTasks.length}
+              total={topLevel.length}
+            />
+          )}
+
+          {view === 'kanban' ? (
+            <KanbanBoard
+              tasks={visibleTasks}
+              subtasksByParent={subtasksByParent}
+              canEdit={(task) => canEditTask(user, project, task)}
+              onOpen={(task) => openTaskById(task.id)}
+              onMove={moveTask}
+            />
+          ) : (
+            <TaskList tasks={visibleTasks} subtasksByParent={subtasksByParent} onOpen={(task) => openTaskById(task.id)} />
+          )}
+        </>
       ) : (
-        <TaskList tasks={visibleTasks} subtasksByParent={subtasksByParent} onOpen={(task) => openTaskById(task.id)} />
+        <ProjectModules project={project} tasks={tasks} section={section} />
       )}
 
       {editingProject && (

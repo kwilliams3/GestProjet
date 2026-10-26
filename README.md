@@ -54,7 +54,7 @@ server/
   scripts/          création de la base, migrations, jeu de démonstration
 ```
 
-Pour faire évoluer le schéma, ajoutez un fichier `server/db/migrations/002_….sql` puis lancez `npm run db:migrate -w server`.
+Pour faire évoluer le schéma, ajoutez une migration SQL numérotée dans `server/db/migrations/` puis lancez `npm run db:migrate -w server`.
 
 ## Avancement par rapport au cahier des charges
 
@@ -83,7 +83,17 @@ Pour faire évoluer le schéma, ajoutez un fichier `server/db/migrations/002_…
 - F02 Invitations par e-mail : l'administrateur invite avec n'importe quel rôle, le chef de projet invite des membres ou des invités sur ses projets ; lien valable 7 jours, à usage unique, révocable
 - Tests automatisés de l'API (`npm test`)
 
-**Lot 3** : exigences « S » (dépendances, Gantt, calendrier, historique, temps passé, exports CSV/PDF, API publique, journal d'audit), interface en anglais, notifications en temps réel par WebSocket, tests de l'interface.
+**Modules de gestion supplémentaires**
+
+- Calendrier mensuel des échéances de tâches et des dates de début/fin des projets actifs visibles par l'utilisateur
+- Rapports par projet sur l'avancement, les retards, les dépenses et le temps enregistré
+- Budget projet avec saisie de dépenses et comparaison au budget prévisionnel
+- Documents partagés au niveau du projet (jusqu'à 50 Mo par fichier)
+- Saisie manuelle du temps passé sur un projet ou une tâche
+
+Ces modules ajoutent la migration `004_project_modules.sql`. Pour mettre à jour une base existante, lancez `npm run db:migrate -w server`.
+
+**Lot 3 restant** : dépendances entre tâches, diagramme de Gantt, historique, exports CSV/PDF, API publique, journal d'audit, interface en anglais, notifications en temps réel par WebSocket et tests de l'interface.
 
 ## Tests
 

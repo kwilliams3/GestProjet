@@ -3,12 +3,14 @@ import { useAuth } from './auth.jsx';
 import Layout from './components/Layout.jsx';
 import { Loading } from './components/ui.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
+import CalendarPage from './pages/CalendarPage.jsx';
 import InvitationPage from './pages/InvitationPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import MyTasksPage from './pages/MyTasksPage.jsx';
 import ProjectPage from './pages/ProjectPage.jsx';
 import ProjectsPage from './pages/ProjectsPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
+import ReportsPage from './pages/ReportsPage.jsx';
 import SsoCallbackPage from './pages/SsoCallbackPage.jsx';
 import UsersPage from './pages/UsersPage.jsx';
 
@@ -38,6 +40,8 @@ export default function App() {
         <Route index element={<DashboardPage />} />
         <Route path="mes-taches" element={<MyTasksPage />} />
         <Route path="projets" element={<ProjectsPage />} />
+        <Route path="calendrier" element={<CalendarPage />} />
+        <Route path="rapports" element={<ReportsPage />} />
         <Route path="projets/:id" element={<ProjectPage />} />
         <Route
           path="admin/utilisateurs"
